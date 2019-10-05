@@ -1,6 +1,7 @@
 package study.tobi.spring3.chapter5.user.entity;
 
 import lombok.*;
+import study.tobi.spring3.chapter5.user.enumerate.Level;
 
 /**
  * Created by Yoo Ju Jin(yjj@hanuritien.com)
@@ -16,4 +17,8 @@ public class User {
     private String id;
     private String name;
     private String password;
+
+    private Level level;
+    private int   login;
+    private int   recommend;
 }
