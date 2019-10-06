@@ -54,13 +54,13 @@ public class UserDaoJdbc implements UserDao {
 
     /* 클라이언트 : 전략 인터페이스인 StatementStrategy의 구현체를 컨텍스트로 주입 */
     @Override
-    public void deleteAll() {
-        jdbcTemplate.update("DELETE FROM users");
+    public int deleteAll() {
+        return jdbcTemplate.update("DELETE FROM users");
     }
 
     @Override
-    public void add(final User user) {
-        jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?)",
+    public int add(final User user) {
+        return jdbcTemplate.update("INSERT INTO users(id, name, password, level, login, recommend) VALUES (?, ?, ?, ?, ?, ?)",
                 user.getId(), user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend());
     }
 
@@ -70,8 +70,8 @@ public class UserDaoJdbc implements UserDao {
     }
 
     @Override
-    public void update(User user) {
-        jdbcTemplate.update("UPDATE users SET name = ?, password = ?, level = ?, login = ?, recommend = ? WHERE id = ?",
+    public int update(User user) {
+        return jdbcTemplate.update("UPDATE users SET name = ?, password = ?, level = ?, login = ?, recommend = ? WHERE id = ?",
                 user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getId());
     }
 

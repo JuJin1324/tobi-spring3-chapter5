@@ -37,7 +37,6 @@ public class UserDaoTest {
     private             User   user1;
     private             User   user2;
     private             User   user3;
-    public static final String STR_C = "4444";
 
     @Before
     public void setUp() {
@@ -123,8 +122,8 @@ public class UserDaoTest {
         assertThat(user1.getLogin(), is(user2.getLogin()));
         assertThat(user1.getRecommend(), is(user2.getRecommend()));
     }
-
     //    @Test(expected = DataAccessException.class)
+
     @Test(expected = DuplicateKeyException.class)
     public void duplicateKey() {
         dao.deleteAll();
@@ -153,6 +152,7 @@ public class UserDaoTest {
         dao.deleteAll();
 
         dao.add(user1);
+        dao.add(user2);
 
         user1.setName("오민규");
         user1.setPassword("spring6");
@@ -163,5 +163,8 @@ public class UserDaoTest {
 
         User user1update = dao.get(user1.getId());
         checkSameUser(user1, user1update);
+
+        User user2same = dao.get(user2.getId());
+        checkSameUser(user2, user2same);
     }
 }

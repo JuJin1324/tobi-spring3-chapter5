@@ -68,3 +68,65 @@ public enum Level {
 }
 ```
 
+## upgradeLevels 메서드 리팩토링
+### UserService 클래스의 기존 upgradeLevels 메서드
+```java
+public void upgradeLevels() {
+    List<User> users = userDao.getAll();
+    for (User user : users) {
+        Boolean changed = null;
+        
+        if (user.getLevel() == Level.BASIC && user.getLogin() >= 50) {
+            user.setLevel(Level.SILVER);
+            changed = true;
+        } else if (user.getLevel() == Level.SILVER && user.getRecommend() >= 30) {
+            user.setLevel(Level.GOLD);
+            changed = true;
+        } else if (user.getLevel() == Level.GOLD) {
+            changed = false;
+        } else {
+            changed = false;
+        }
+
+        if (changed) {
+            userDao.update(user);
+        }
+    }
+}
+```
+* 문제점 1. 현재 레벨 파악 로직(user.getLevel() == Level.BASIC)과 업그레이드 조건을 담은 로직(user.getLogin() >= 50) 혼재 
+
+* 문제점 2. Level 이 추가될 시에 else 문 추가 필요
+
+* 문제점 3. 너무 많은 if/else 문 산재
+
+### upgradeLevel() 리팩토링
+```java
+public void upgradeLevels() {
+    List<User> users = userDao.getAll();
+    for (User user : users) {
+        if (canUpdateLevel(user)) {
+            upgradeLevel(user);
+        }
+    }
+}
+
+private boolean canUpdateLevel(User user) {
+    Level currentLevel = user.getLevel();
+    switch (currentLevel) {
+        case BASIC: return (user.getLogin() >= 50);
+        case SILVER: return (user.getRecommend() >= 30);
+        case GOLD: return false;
+        default: throw new IllegalArgumentException("Unknown Level : " + currentLevel);
+    }
+}
+
+private void upgradeLevel(User user) {
+    if (user.getLevel() == Level.BASIC) user.setLevel(Level.SILVER);
+    else if (user.getLevel() == Level.SILVER) user.setLevel(Level.GOLD);
+    userDao.update(user);
+}
+```
+* 업그레이드 작업용 메서드를 따로 분리해두면 나중에 작업 내용이 추가되더라도 어느 곳을 수정해야 할지가 명확해진다는 장점이있다.  
+ex) 업그레이드시 안내 메일을 보낸다거나 로그를 남기거나 관리자에게 통보를 하는 등의 작업 내용 추가 가능.;
+
